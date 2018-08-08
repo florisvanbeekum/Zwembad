@@ -29,6 +29,7 @@ boolean buttonActive = false;
 boolean longPressActive = false;
 long buttonTimer = 0;
 long longPressTime = 500;
+long tijd_display = 0;
 
 boolean ShortOverRule = false;
 unsigned long ShortOverRuleTimer;
@@ -179,15 +180,7 @@ void loop(void)
       
 
 
-   //lcd.setCursor(0,0); //First line
-   //lcd.print("In:");
-   //lcd.print(TempPool,1);
-   //lcd.setCursor(8,0); //First line
-   //lcd.print("Out:");
-   //lcd.print(TempOutdoor,1);
-   //lcd.setCursor(0,1); //Second line
-   //lcd.print("Fridge:");
-   //lcd.print(TempFlowOut,1);
+  
 
  if ((!ShortOverRule) && (!LongOverRule))
  {  
@@ -227,21 +220,45 @@ void loop(void)
      {
           Serial.println(" ");
      }
-     for (int i = 0; i < ArrayElements; i++)
-   {
-      Serial.print(TempPoolArray[i]);
-      Serial.print(" ");
-   }
-   Serial.println(" ");
+     
+     //for (int i = 0; i < ArrayElements; i++)
+     //{
+     // Serial.print(TempPoolArray[i]);
+     // Serial.print(" ");
+     //}
+     //Serial.println(" ");
 
-     Serial.print("TempPool: ");
-     Serial.print(TempPool);
-     Serial.print("  TempFlowOut: ");
-     Serial.print(TempFlowOut);
-     Serial.print("  TempTopRack: ");
-     Serial.print(TempTopRack);
      Serial.print("  TempOutdoor: ");
      Serial.print(TempOutdoor);
+     lcd.setCursor(0,0); //First line
+     lcd.print("Out:");
+     lcd.print(TempOutdoor,1);
+     
+     Serial.print("TempPool: ");
+     Serial.print(TempPool);
+     lcd.setCursor(9,0); //First line
+     lcd.print("Pl:");
+     lcd.print(TempPool,1);
+
+     Serial.print("  TempTopRack: ");
+     Serial.print(TempTopRack);
+     if (!ShortOverRule && !LongOverRule)
+     {
+        lcd.setCursor(0,1); //Second line
+        lcd.print("Rk: ");
+        lcd.print(TempTopRack,1);
+     }
+     
+     
+     Serial.print("  TempFlowOut: ");
+     Serial.print(TempFlowOut);
+     if (!ShortOverRule && !LongOverRule)
+     {
+       lcd.setCursor(9,1); //Second line
+       lcd.print("Fw:");
+       lcd.print(TempFlowOut,1);
+     }
+     
      Serial.print("  Timer: ");
      Serial.print(Timer);
      Serial.print("/");
@@ -256,11 +273,15 @@ void loop(void)
      {
        Serial.print(" Timer = ");
        Serial.print( (ShortOverRuleTime - (millis() - ShortOverRuleTimer)) /1000);
-      }
+       lcd.setCursor(0,1); //Second line
+       lcd.print("Timer: ");
+       lcd.print((ShortOverRuleTime - (millis() - ShortOverRuleTimer)) /1000);
+       lcd.print("s       ");
+     }
      Serial.print(" LongOverRule = ");
      Serial.print(LongOverRule);
      if (LongOverRule)
-     {
+     { 
        Serial.print(" Timer = ");
        long RemainingTimeSeconds = (LongOverRuleTime - (millis() - LongOverRuleTimer)) / 1000;
        int Uren = RemainingTimeSeconds  / 3600;
@@ -273,21 +294,38 @@ void loop(void)
        Serial.print(Minuten);
        Serial.print(":");
        Serial.println(Seconden);
-       
+
+       tijd_display++;
+       if ( tijd_display  < 5)
+       {
+         tijd_display++;
+         lcd.setCursor(0,1); //Second line
+         lcd.print("Timer: ");
+         lcd.print(Uren);
+         lcd.print(":");
+         lcd.print(Minuten);
+         lcd.print(":");
+         lcd.print(Seconden);
+         lcd.print("   ");
+       }
+       else
+       {
+         if ( tijd_display  > 5)
+         {
+            tijd_display=0;
+         }
+         lcd.setCursor(0,1); //Second line
+         lcd.print("Rk: ");
+         lcd.print(TempTopRack,1);
+         lcd.print(" ");
+         lcd.setCursor(9,1); //Second line
+         lcd.print("Fw:");
+         lcd.print(TempFlowOut,1);
+       }
       }
 
-      lcd.setCursor(0,0); //First line
-      lcd.print("Out:");
-      lcd.print(TempOutdoor,1);
-      lcd.setCursor(9,0); //First line
-      lcd.print("Pl:");
-      lcd.print(TempPool,1);
-      lcd.setCursor(0,1); //Second line
-      lcd.print("Rk:");
-      lcd.print(TempTopRack,1);
-      lcd.setCursor(9,1); //Second line
-      lcd.print("Fw:");
-      lcd.print(TempFlowOut,1);
+     
+      
     
    }
    Wacht++;
