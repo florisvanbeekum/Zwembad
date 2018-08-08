@@ -110,10 +110,30 @@ void loop(void)
 
 
    //Vraag temperatuur op aan de sensors  
+   
    TempPoolArray[ArrayCounter] = sensors.getTempCByIndex(2);
+   if ( TempPoolArray[ArrayCounter] < -100 )  // Als er een foute waarde wordt gelezen (-128) dan pak de gemiddelde waarde van de vorige metingen
+   {
+      TempPoolArray[ArrayCounter] = TempPool;
+   }
+   
    TempFlowOutArray [ArrayCounter] = sensors.getTempCByIndex(1);
+   if ( TempFlowOutArray [ArrayCounter] < -100 )
+   {
+      TempFlowOutArray [ArrayCounter] = TempFlowOut; 
+   }
+   
    TempOutdoorArray[ArrayCounter] = sensors.getTempCByIndex(3);
+   if ( TempOutdoorArray[ArrayCounter] < -100)
+   {
+      TempOutdoorArray[ArrayCounter] = TempOutdoor;
+   }
+   
    TempTopRackArray[ArrayCounter] = sensors.getTempCByIndex(0);
+   if ( TempTopRackArray[ArrayCounter] < -100 )
+   {
+      TempTopRackArray[ArrayCounter] = TempTopRack;
+   }
 
 
    ArrayCounter++;
@@ -203,10 +223,17 @@ void loop(void)
 
    if (Wacht == 0)
    {
-     for(int i = 0; i <= 12; i++)
+     for(int i = 0; i <= 13; i++)
      {
           Serial.println(" ");
      }
+     for (int i = 0; i < ArrayElements; i++)
+   {
+      Serial.print(TempPoolArray[i]);
+      Serial.print(" ");
+   }
+   Serial.println(" ");
+
      Serial.print("TempPool: ");
      Serial.print(TempPool);
      Serial.print("  TempFlowOut: ");
@@ -248,7 +275,19 @@ void loop(void)
        Serial.println(Seconden);
        
       }
-   
+
+      lcd.setCursor(0,0); //First line
+      lcd.print("Out:");
+      lcd.print(TempOutdoor,1);
+      lcd.setCursor(9,0); //First line
+      lcd.print("Pl:");
+      lcd.print(TempPool,1);
+      lcd.setCursor(0,1); //Second line
+      lcd.print("Rk:");
+      lcd.print(TempTopRack,1);
+      lcd.setCursor(9,1); //Second line
+      lcd.print("Fw:");
+      lcd.print(TempFlowOut,1);
     
    }
    Wacht++;
